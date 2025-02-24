@@ -11,14 +11,15 @@
 		</v-alert>
 
 		<v-form ref="form" v-model="valid" lazy-validation>
-			<v-row v-for="(account, index) in accounts" :key="index" class="mt-3">
+			<v-row v-for="account in accounts" :key="account.id" class="mt-3">
 				<v-col cols="12" md="3">
 					<v-text-field
-						v-model="account.label"
+						v-model="account.labelsText"
 						label="Метка"
-						:rules="[(v) => !!v || 'Это поле обязательно']"
+						:rules="[(v) => (v && v.length <= 50) || 'Максимум 50 символов']"
 						outlined
 						dense
+						@blur="updateAccount(account)"
 					/>
 				</v-col>
 
@@ -27,9 +28,9 @@
 						v-model="account.type"
 						label="Тип записи"
 						:items="['LDAP', 'Локальная']"
-						:rules="[(v) => !!v || 'Выберите тип записи']"
 						outlined
 						dense
+						@update:modelValue="updateAccount(account)"
 					/>
 				</v-col>
 
@@ -43,6 +44,7 @@
 						]"
 						outlined
 						dense
+						@blur="updateAccount(account)"
 					/>
 				</v-col>
 
@@ -57,11 +59,12 @@
 						]"
 						outlined
 						dense
+						@blur="updateAccount(account)"
 					/>
 				</v-col>
 
 				<v-col cols="12" md="1">
-					<v-btn icon @click="removeAccount(index)"> Х </v-btn>
+					<v-btn icon @click="removeAccount(account.id)"> Х </v-btn>
 				</v-col>
 			</v-row>
 		</v-form>
@@ -69,20 +72,43 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
+import { useAccountStore, type Account } from '../stores/accountStore'
 
-const accounts = ref([
-	{ label: '', type: 'Локальная', login: '', password: '' },
-])
+onMounted(() => {
+	console.log('Аккаунты в сторе:', accountStore.accounts)
+})
+
+interface AccountForm extends Account {
+	labelsText: string
+}
+
+const accountStore = useAccountStore()
 
 const valid = ref(false)
 
-const removeAccount = (index: number) => {
-	accounts.value.splice(index, 1)
-}
+const accounts = computed(() =>
+	accountStore.accounts.map((acc) => ({
+		...acc,
+		labelsText: (acc.labels || []).map((label) => label.text).join('; '),
+	}))
+)
 
 const addAccount = () => {
-	accounts.value.push({ label: '', type: 'Локальная', login: '', password: '' })
+	accountStore.addAccount()
+}
+
+const removeAccount = (id: number) => {
+	accountStore.removeAccount(id)
+}
+
+const updateAccount = (account: AccountForm) => {
+	accountStore.updateAccount(account.id, {
+		labelsText: account.labelsText,
+		type: account.type,
+		login: account.login,
+		password: account.password,
+	})
 }
 </script>
 
