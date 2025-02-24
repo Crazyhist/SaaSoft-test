@@ -17,6 +17,7 @@
 						v-model="account.labelsText"
 						label="Метка"
 						:rules="[(v) => (v && v?.length <= 50) || 'Максимум 50 символов']"
+						maxlength="50"
 						outlined
 						dense
 						@blur="updateAccount(account)"
@@ -42,6 +43,7 @@
 							(v) => !!v || 'Это поле обязательно',
 							(v) => v?.length <= 100 || 'Максимум 100 символов',
 						]"
+						maxlength="100"
 						outlined
 						dense
 						@blur="updateAccount(account)"
@@ -57,6 +59,7 @@
 							(v) => !!v || 'Это поле обязательно',
 							(v) => v?.length <= 100 || 'Максимум 100 символов',
 						]"
+						maxlength="100"
 						outlined
 						dense
 						@blur="updateAccount(account)"
