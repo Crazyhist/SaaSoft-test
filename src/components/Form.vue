@@ -16,7 +16,7 @@
 					<v-text-field
 						v-model="account.labelsText"
 						label="Метка"
-						:rules="[(v) => (v && v.length <= 50) || 'Максимум 50 символов']"
+						:rules="[(v) => (v && v?.length <= 50) || 'Максимум 50 символов']"
 						outlined
 						dense
 						@blur="updateAccount(account)"
@@ -40,7 +40,7 @@
 						label="Логин"
 						:rules="[
 							(v) => !!v || 'Это поле обязательно',
-							(v) => (v && v.length <= 100) || 'Максимум 100 символов',
+							(v) => v?.length <= 100 || 'Максимум 100 символов',
 						]"
 						outlined
 						dense
@@ -55,7 +55,7 @@
 						type="password"
 						:rules="[
 							(v) => !!v || 'Это поле обязательно',
-							(v) => (v && v.length <= 100) || 'Максимум 100 символов',
+							(v) => v?.length <= 100 || 'Максимум 100 символов',
 						]"
 						outlined
 						dense

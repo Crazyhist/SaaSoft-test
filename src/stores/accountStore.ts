@@ -13,7 +13,7 @@ export interface Account {
 	labelsText?: string
 	type: AccountType
 	login: string
-	password: string
+	password: string | null
 }
 
 export const useAccountStore = defineStore('accountStore', () => {
@@ -52,16 +52,26 @@ export const useAccountStore = defineStore('accountStore', () => {
 					.map((label) => ({ text: label.trim() }))
 					.filter((label) => label.text)
 			}
+
+			if (data.type === 'LDAP') {
+				account.password = null
+			}
 		}
 		saveAccountsToStorage()
 	}
 
 	const validateAccount = (account: Account): boolean => {
 		if (!account.login.trim() || account.login.length > 100) return false
+
 		if (account.type === 'Локальная') {
-			if (!account.password.trim() || account.password.length > 100)
+			if (
+				!account.password ||
+				!account.password.trim() ||
+				account.password.length > 100
+			)
 				return false
 		}
+
 		return true
 	}
 
